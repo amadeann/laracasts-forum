@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\User;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -12,6 +13,7 @@ abstract class TestCase extends BaseTestCase
     protected function setUp()
     {
         parent::setUp();
+        Schema::enableForeignKeyConstraints();
         $this->withoutExceptionHandling();
     }
 

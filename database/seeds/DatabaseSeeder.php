@@ -23,11 +23,13 @@ class DatabaseSeeder extends Seeder
             [
                 'email' => 'aa+2@ak-ventures.eu',
                 'name' => 'amade2',
+                'confirmed' => true,
                 'password' => bcrypt('secret'),
             ],
             [
                 'email' => 'aa@ak-ventures.eu',
                 'name' => 'amade',
+                'confirmed' => true,
                 'password' => bcrypt('secret'),
             ]
         ])->each(function ($user) {

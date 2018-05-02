@@ -8,6 +8,9 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+import InstantSearch from 'vue-instantsearch';
+Vue.use(InstantSearch);
+
 let authorizations = require('./authorizations');
 
 window.Vue.prototype.authorize = function(...params) {
@@ -38,6 +41,7 @@ Vue.component('flash', require('./components/Flash.vue'));
 Vue.component('paginator', require('./components/Paginator.vue'));
 Vue.component('user-notifications', require('./components/UserNotifications.vue'));
 Vue.component('avatar-form', require('./components/AvatarForm.vue'));
+Vue.component('wysiwyg', require('./components/Wysiwyg.vue'));
 
 Vue.component('thread-view', require('./pages/Thread.vue'));
 

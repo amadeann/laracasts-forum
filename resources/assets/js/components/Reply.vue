@@ -3,12 +3,12 @@
         <div class="card-header" :class="isBest ? 'bg-success' : 'bg-default'">
             <div class="level">
                 <h5 class="flex">
-                    <a :href="'/profiles/'+data.owner.name" 
-                        v-text="data.owner.name">
+                    <a :href="'/profiles/'+reply.owner.name" 
+                        v-text="reply.owner.name">
                     </a> said <span>{{ ago }}</span>...
                 </h5>
                 <div>
-                    <favorite :reply="data"></favorite>
+                    <favorite :reply="reply"></favorite>
                 </div>
             </div>
         </div>
@@ -16,7 +16,7 @@
             <div v-if="editing">
                 <form @submit.prevent="update">
                     <div class="form-group">
-                        <textarea class="form-control" rows="3" v-model="body" @keydown.enter.prevent @keyup.enter="update" required></textarea>
+                        <wysiwyg v-model="body"></wysiwyg>
                     </div>
                     <button class="btn btn-sm btn-primary" type="submit">Update</button>
                     <button class="btn btn-sm btn-link" @click="editing = false" type="button">Cancel</button>
@@ -25,12 +25,12 @@
             <div v-else v-html="body"></div>
         </div>
         
-        <div class="card-footer level">
-            <div v-if="authorize('updateReply', reply)">
-                <button class="btn btn-sm mr-3" @click="editing = true">Edit</button>
+        <div class="card-footer level" v-if="authorize('owns', reply) || authorize('owns', reply.thread)">
+            <div v-if="authorize('owns', reply)">
+                <button class="btn btn-sm mr-2" @click="editing = true">Edit</button>
                 <button class="btn btn-sm btn-danger mr-3" @click="destroy">Delete</button>
             </div>
-            <button class="btn btn-sm ml-auto" @click="markBestReply" v-show="! isBest">Best Reply?</button>
+            <button class="btn btn-sm ml-auto" @click="markBestReply" v-if="authorize('owns', reply.thread)">Best Reply?</button>
         </div>
     </div>
 </template>
@@ -41,20 +41,19 @@
     import moment from "moment";
 
     export default {
-        props: ["data"],
+        props: ["reply"],
         components: { Favorite },
         data() {
             return {
                 editing: false,
-                id: this.data.id,
-                body: this.data.body,
-                isBest: this.data.isBest,
-                reply: this.data
+                id: this.reply.id,
+                body: this.reply.body,
+                isBest: this.reply.isBest,
             };
         },
         computed: {
             ago() {
-                return moment(this.data.created_at).fromNow();
+                return moment(this.reply.created_at).fromNow();
             }
         },
         created() {
@@ -65,7 +64,7 @@
         methods: {
             update() {
                 axios
-                    .patch("/replies/" + this.data.id, {
+                    .patch("/replies/" + this.id, {
                         body: this.body
                     })
                     .catch(error => {
@@ -78,14 +77,14 @@
                 this.editing = false;
             },
             destroy() {
-                axios.delete("/replies/" + this.data.id);
+                axios.delete("/replies/" + this.id);
 
                 this.$emit("deleted", this.id);
             },
             markBestReply() {
-                axios.post('/replies/' + this.data.id + '/best');
+                axios.post('/replies/' + this.id + '/best');
 
-                window.events.$emit('best-reply-selected', this.data.id);
+                window.events.$emit('best-reply-selected', this.id);
             }
         }
     };

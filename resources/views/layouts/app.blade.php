@@ -12,6 +12,7 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/0.11.2/trix.css">
     
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
     <script charset="utf-8">
@@ -21,7 +22,7 @@
         ]) !!};
     </script>
 
-    @yield('header')
+    @yield('head')
 </head>
 <body>
 <div id="app">
@@ -50,6 +51,11 @@
 
     [v-cloak] {
         display: none;
+    }
+
+    .ais-highlight > em {
+        background: yellow;
+        font-style: normal;
     }
 </style>
 

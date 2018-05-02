@@ -2,19 +2,24 @@
 
 namespace App;
 
+use Laravel\Scout\Searchable;
 use App\Events\ThreadReceivedANewReply;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
 class Thread extends Model
 {
-    use RecordsActivity;
+    use RecordsActivity, Searchable;
 
-    protected $fillable = ['user_id', 'channel_id', 'title', 'body', 'best_reply_id'];
+    protected $fillable = ['user_id', 'channel_id', 'title', 'body', 'best_reply_id', 'locked'];
 
     protected $with = ['creator', 'channel'];
 
     protected $appends = ['isSubscribedTo'];
+
+    protected $casts = [
+        'locked' => 'boolean'
+    ];
 
     protected static function boot()
     {
@@ -124,5 +129,15 @@ class Thread extends Model
     public function markBestReply(Reply $reply)
     {
         $this->update(['best_reply_id' => $reply->id]);
+    }
+
+    public function toSearchableArray()
+    {
+        return $this->toArray() + ['path' => $this->path()];
+    }
+
+    public function getBodyAttribute($body)
+    {
+        return \Purify::clean($body);
     }
 }

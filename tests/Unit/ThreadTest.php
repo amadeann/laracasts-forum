@@ -133,4 +133,11 @@ class ThreadTest extends TestCase
             $this->assertFalse($thread->hasUpdatesFor($user));
         });
     }
+
+    public function testAThreadsBodyIsSanitizedAutomatically()
+    {
+        $thread = make(Thread::class, ['body' => '<script>alert("bad")</script><p>This is okay</p>']);
+
+        $this->assertEquals('<p>This is okay</p>', $thread->body);
+    }
 }

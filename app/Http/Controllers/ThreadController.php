@@ -6,6 +6,7 @@ use App\Thread;
 use App\Channel;
 use App\Trending;
 use App\Rules\SpamFree;
+use App\Rules\Recaptcha;
 use Illuminate\Http\Request;
 use App\Filters\ThreadFilters;
 use Illuminate\Support\Facades\Redis;
@@ -51,21 +52,15 @@ class ThreadController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Recaptcha $recaptcha)
     {
-        $this->validate($request, [
-            'title' => [
-                'required',
-                new SpamFree,
-            ],
-            'body' => [
-                'required',
-                new SpamFree,
-            ],
+        request()->validate([
+            'title' => ['required', new SpamFree],
+            'body' => ['required', new SpamFree],
             'channel_id' => 'required|exists:channels,id',
+            'g-recaptcha-response' => ['required', $recaptcha]
         ]);
 
         $thread = Thread::create([
@@ -75,7 +70,7 @@ class ThreadController extends Controller
             'body' => request('body'),
         ]);
 
-        if ($request->wantsJson()) {
+        if (request()->wantsJson()) {
             return response($thread, 201);
         }
 
@@ -115,16 +110,14 @@ class ThreadController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Thread  $thread
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Thread $thread)
+    public function update($channel, Thread $thread)
     {
-        //
+        $this->authorize('update', $thread);
+
+        $thread->update(request()->validate([
+            'title' => ['required', new SpamFree],
+            'body' => ['required', new SpamFree],
+        ]));
     }
 
     /**

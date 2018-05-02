@@ -12,14 +12,14 @@ class UserAvatarController extends Controller
         $this->middleware(['auth']);
     }
 
-    public function store(Request $request)
+    public function store()
     {
-        $request->validate([
+        request()->validate([
             'avatar' => ['required', 'image']
         ]);
 
         auth()->user()->update([
-            'avatar_path' => $request->file('avatar')->store('avatars', 'public')
+            'avatar_path' => request()->file('avatar')->store('avatars', 'public')
         ]);
 
         return response([], 204);

@@ -22,17 +22,21 @@ class ReplyController extends Controller
 
     public function store(CreatePostRequest $form, $channelId, Thread $thread)
     {
+        if ($thread->locked) {
+            return response('Thread is locked', 422);
+        }
+
         return $thread->addReply([
             'body' => $form->body,
             'user_id' => auth()->user()->id,
         ])->load('owner');
     }
 
-    public function update(Request $request, Reply $reply)
+    public function update(Reply $reply)
     {
         $this->authorize('update', $reply);
 
-        $this->validate(request(), [
+        request()->validate([
                 'body' => ['required', new SpamFree],
             ]);
 

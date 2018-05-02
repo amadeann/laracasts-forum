@@ -18,16 +18,24 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::view('scan', 'scan');
+
 Route::get('/threads', 'ThreadController@index')->name('threads');
-Route::post('/threads', 'ThreadController@store')->middleware('must-be-confirmed');
 Route::get('/threads/create', 'ThreadController@create');
-Route::get('/threads/{channel}', 'ThreadController@index');
-Route::get('/threads/{channel}/{thread}', 'ThreadController@show');
+Route::get('/threads/search', 'SearchController@show');
 Route::delete('/threads/{channel}/{thread}', 'ThreadController@destroy');
+Route::patch('/threads/{channel}/{thread}', 'ThreadController@update');
 Route::get('/threads/{channel}/{thread}/replies', 'ReplyController@index');
+Route::post('/threads', 'ThreadController@store')->middleware('must-be-confirmed');
+Route::get('/threads/{channel}', 'ThreadController@index');
+
+Route::post('/locked-threads/{thread}', 'LockedThreadController@store')->name('locked-threads.store')->middleware('admin');
+Route::delete('/locked-threads/{thread}', 'LockedThreadController@destroy')->name('locked-threads.destroy')->middleware('admin');
+
+Route::get('/threads/{channel}/{thread}', 'ThreadController@show');
 Route::post('/threads/{channel}/{thread}/replies', 'ReplyController@store');
 Route::patch('/replies/{reply}', 'ReplyController@update');
-Route::delete('/replies/{reply}', 'ReplyController@destroy');
+Route::delete('/replies/{reply}', 'ReplyController@destroy')->name('replies.destroy');
 
 Route::post('/replies/{reply}/best', 'BestReplyController@store')->name('best-replies.store');
 
